@@ -18,7 +18,42 @@ namespace DiamondKata.Generators
         /// <inheritdoc/>
         public IEnumerable<string> Generate(char character)
         {
-            throw new NotImplementedException();
+            if (character < DiapasonCharacterStart || character > DiapasonCharacterEnd)
+            {
+                throw new DiamondValidationException($"Invalid character '{character}'.");
+            }
+
+            var charsCount = character - DiapasonCharacterStart + 1;
+            var linesCount = charsCount * 2 - 1;
+            var diamondLines = new string[linesCount];
+
+            for (char currentChar = DiapasonCharacterStart; currentChar < DiapasonCharacterStart + charsCount; currentChar++)
+            {
+                var lineIndexOpening = currentChar - DiapasonCharacterStart;
+                var lineIndexClosing = linesCount - lineIndexOpening - 1;
+                var edgeCharsCount = charsCount + DiapasonCharacterStart - currentChar - 1;
+                var innerCharsCount = lineIndexOpening * 2 - 1;
+
+                var diamondLine = new StringBuilder();
+                diamondLine.Append(EmptySpaceChar, edgeCharsCount)
+                            .Append(currentChar);
+
+                if (innerCharsCount > 0)
+                {
+                    diamondLine.Append(EmptySpaceChar, innerCharsCount)
+                                .Append(currentChar);
+                }
+
+                diamondLine.Append(EmptySpaceChar, edgeCharsCount);
+
+                diamondLines[lineIndexOpening] = diamondLine.ToString();
+                if (lineIndexOpening != lineIndexClosing)
+                {
+                    diamondLines[lineIndexClosing] = diamondLines[lineIndexOpening];
+                }
+            }
+
+            return diamondLines;
         }
     }
 }
